@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Youpay.API.Migrations
 {
-    public partial class AddsUsersTransactionAndAccount : Migration
+    public partial class AddsUserTransactionBankingDetailsTables : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,7 +11,7 @@ namespace Youpay.API.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Firstname = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     LastName = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
@@ -22,8 +22,8 @@ namespace Youpay.API.Migrations
                     PasswordSalt = table.Column<byte[]>(type: "BLOB", nullable: false),
                     PasswordResetToken = table.Column<string>(type: "TEXT", maxLength: 6, nullable: true),
                     ResetExpiresAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "GETDATE()"),
-                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "GETDATE()")
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -34,14 +34,15 @@ namespace Youpay.API.Migrations
                 name: "BankingDetails",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     BankName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     BankNumber = table.Column<long>(type: "INTEGER", nullable: false),
                     AccountType = table.Column<int>(type: "INTEGER", maxLength: 20, nullable: false),
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "GETDATE()"),
-                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "GETDATE()")
+                    IsMain = table.Column<bool>(type: "INTEGER", nullable: false),
+                    UserId = table.Column<long>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -69,10 +70,10 @@ namespace Youpay.API.Migrations
                     ConfirmedDilivery = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
                     Completed = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
                     HasIssue = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
-                    MerchantId = table.Column<int>(type: "INTEGER", nullable: true),
-                    BuyerId = table.Column<int>(type: "INTEGER", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "GETDATE()"),
-                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "GETDATE()")
+                    MerchantId = table.Column<long>(type: "INTEGER", nullable: true),
+                    BuyerId = table.Column<long>(type: "INTEGER", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
