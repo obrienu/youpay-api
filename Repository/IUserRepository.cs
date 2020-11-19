@@ -11,7 +11,7 @@ namespace Youpay.API.Repository.Impl
         Task<User> FindUserByEmail(string email);
         void SaveUser(User user);
         void UpdateUser(User user);
-        void DeleteUser(long id);
+        void DeleteUser(User user);
         Task<bool> SaveChanges();
         Task<bool> UserExists(string email);
 

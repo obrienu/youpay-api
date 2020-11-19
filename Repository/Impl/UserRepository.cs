@@ -15,9 +15,9 @@ namespace Youpay.API.Repository.Impl
             _context = context;
 
         }
-        public void DeleteUser(long id)
+        public void DeleteUser(User user)
         {
-            throw new System.NotImplementedException();
+            _context.Users.Remove(user);
         }
 
         public async Task<User> FindUserByEmail(string email)
