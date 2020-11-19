@@ -8,7 +8,7 @@ namespace Youpay.API.Models
     public class BankingDetails
     {
         [Key]
-        public int Id { get; set; }
+        public long? Id { get; set; }
        
         [Required]
         [StringLength(100)]
@@ -18,6 +18,7 @@ namespace Youpay.API.Models
         [Required]
         [StringLength(20)]
         public AccountType AccountType { get; set; }
+        public bool IsMain { get; set; }
         [Required]
         public User User { get; set; }
 
