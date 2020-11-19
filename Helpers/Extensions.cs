@@ -11,5 +11,31 @@ namespace Youpay.API.Helpers
             response.Headers.Add("Access-Control-Allow-Origin", "*");
 
         }
+
+        public static Gender SetGender(this string gender)
+        {
+            switch (gender.ToLower())
+            {
+                case "male":
+                    return Gender.MALE;
+                default:
+                    return Gender.FEMALE;
+            }
+
+        }
+
+        public static AccountType SetAccountType(this string accountType)
+        {
+            switch (accountType.ToLower())
+            {
+                case "savings":
+                    return AccountType.SAVINGS;
+                case "current":
+                    return AccountType.CURRENT;
+                default:
+                    return AccountType.CREDIT;
+            }
+
+        }
     }
 }
