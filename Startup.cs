@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -13,6 +14,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Youpay.API.Data;
 using Youpay.API.Helpers;
+using Youpay.API.Repository.Impl;
+using Youpay.API.Services.Impl;
 using Youpay.API.Utils;
 using Youpay.API.Utils.Impl;
 
@@ -30,8 +33,11 @@ namespace Youpay.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(typeof(AuthServices).Assembly);
             services.AddScoped<ITokenUtil, TokenUtil>();
-            services.AddScoped<ITransactionsUtil, TransactionsUtil>();
+            services.AddScoped<IUserUtil, UserUtil>();
+            services.AddScoped<IAuthServices, AuthServices>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddDbContext<DataContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
