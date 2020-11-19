@@ -12,24 +12,24 @@ namespace Youpay.API.Data
         {
             modelBuilder.Entity<BankingDetails>()
                 .Property(p => p.CreatedAt)
-                    .HasDefaultValueSql("GETDATE()");
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
             modelBuilder.Entity<User>()
             .Property(p => p.CreatedAt)
-                .HasDefaultValueSql("GETDATE()");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
             modelBuilder.Entity<Transaction>()
             .Property(p => p.CreatedAt)
-                .HasDefaultValueSql("GETDATE()");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
             modelBuilder.Entity<BankingDetails>()
                 .Property(p => p.UpdatedAt)
-                .HasDefaultValueSql("GETDATE()");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             modelBuilder.Entity<User>()
             .Property(p => p.UpdatedAt)
-            .HasDefaultValueSql("GETDATE()");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             modelBuilder.Entity<Transaction>()
             .Property(p => p.UpdatedAt)
-            .HasDefaultValueSql("GETDATE()");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             modelBuilder.Entity<Transaction>()
                 .Property(p => p.HasPaid)
