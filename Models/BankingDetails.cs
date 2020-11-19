@@ -14,7 +14,7 @@ namespace Youpay.API.Models
         [StringLength(100)]
         public string BankName { get; set; }
         [Required]
-        public long BankNumber { get; set; }
+        public long AccountNumber { get; set; }
         [Required]
         [StringLength(20)]
         public AccountType AccountType { get; set; }
