@@ -44,7 +44,7 @@ namespace Youpay.API.Data
                 .HasDefaultValue(false);
 
             modelBuilder.Entity<Transaction>()
-                .Property(p => p.ConfirmedDilivery)
+                .Property(p => p.Delivered)
                 .HasDefaultValue(false);
 
             modelBuilder.Entity<Transaction>()
