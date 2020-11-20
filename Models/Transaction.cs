@@ -21,7 +21,7 @@ namespace Youpay.API.Models
         public bool HasPaid { get; set; }
         public bool IsCanceled { get; set; }
         public bool HasShipped { get; set; }
-        public bool ConfirmedDilivery { get; set; }
+        public bool Delivered { get; set; }
         public bool Completed { get; set; }
         public bool HasIssue { get; set; }
         public User Merchant { get; set; }
