@@ -39,7 +39,8 @@ namespace Youpay.API.Models
         [StringLength(6)]
         public string PasswordResetToken { get; set; }
         public DateTime ResetExpiresAt { get; set; }
-        public virtual ICollection<BankingDetails> BankingDetails { get; set; }
+        public bool IsVerified { get; set; }
+        public virtual IList<BankingDetails> BankingDetails { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime CreatedAt { get; set; }
 
