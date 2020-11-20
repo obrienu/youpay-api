@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Youpay.API.Migrations
 {
-    public partial class AddsUserTransactionBankingDetailsTables : Migration
+    public partial class AddsUserBankingDetailAndTransactionModel : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -22,6 +22,7 @@ namespace Youpay.API.Migrations
                     PasswordSalt = table.Column<byte[]>(type: "BLOB", nullable: false),
                     PasswordResetToken = table.Column<string>(type: "TEXT", maxLength: 6, nullable: true),
                     ResetExpiresAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsVerified = table.Column<bool>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
@@ -37,7 +38,7 @@ namespace Youpay.API.Migrations
                     Id = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     BankName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    BankNumber = table.Column<long>(type: "INTEGER", nullable: false),
+                    AccountNumber = table.Column<long>(type: "INTEGER", nullable: false),
                     AccountType = table.Column<int>(type: "INTEGER", maxLength: 20, nullable: false),
                     IsMain = table.Column<bool>(type: "INTEGER", nullable: false),
                     UserId = table.Column<long>(type: "INTEGER", nullable: false),
@@ -67,7 +68,7 @@ namespace Youpay.API.Migrations
                     HasPaid = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
                     IsCanceled = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
                     HasShipped = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
-                    ConfirmedDilivery = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
+                    Delivered = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
                     Completed = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
                     HasIssue = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
                     MerchantId = table.Column<long>(type: "INTEGER", nullable: true),

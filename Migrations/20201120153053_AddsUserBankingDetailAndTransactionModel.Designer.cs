@@ -9,8 +9,8 @@ using Youpay.API.Data;
 namespace Youpay.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20201118232803_AddsUserTransactionBankingDetailsTables")]
-    partial class AddsUserTransactionBankingDetailsTables
+    [Migration("20201120153053_AddsUserBankingDetailAndTransactionModel")]
+    partial class AddsUserBankingDetailAndTransactionModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,6 +24,9 @@ namespace Youpay.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<long>("AccountNumber")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("AccountType")
                         .HasMaxLength(20)
                         .HasColumnType("INTEGER");
@@ -32,9 +35,6 @@ namespace Youpay.API.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
-
-                    b.Property<long>("BankNumber")
-                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -81,15 +81,15 @@ namespace Youpay.API.Migrations
                         .HasColumnType("INTEGER")
                         .HasDefaultValue(false);
 
-                    b.Property<bool>("ConfirmedDilivery")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(false);
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<bool>("Delivered")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -158,6 +158,9 @@ namespace Youpay.API.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("LastName")
                         .IsRequired()
