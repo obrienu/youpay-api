@@ -104,7 +104,8 @@ namespace Youpay.API.Services.Impl
              _userRepo.SaveUser(user);
             var saved = await _userRepo.SaveChanges();
             if(!saved){
-               throw new Exception("Error Trying to register user please try again");
+               return new ApiResponseDto<UserDto>(500,
+                 "An Error occured while trying to register user", "Error registering user", null);
             }
 
             var userToReturn = _mapper.Map<UserDto>(user);
@@ -127,11 +128,68 @@ namespace Youpay.API.Services.Impl
             }
         }
 
-        private async void VerifyUser(User user)
+        public async void VerifyUser(User user)
         {
             user.IsVerified = true;
             _userRepo.UpdateUser(user);
            await _userRepo.SaveChanges();
+        }
+
+        public async Task<ApiResponseDto<bool>> RequestPasswordReset(string email)
+        {
+            var user = await _userRepo.FindUserByEmail(email);
+            if(user == null)
+            {
+                return new ApiResponseDto<bool>(404, "User record not found", "Error reseting password", false);
+            }
+            var token = _userUtil.GenerateRandomId(8);
+            var tokenExpiringDate = DateTime.Now.AddMinutes(10);
+            System.Console.WriteLine(token);
+            user.PasswordResetToken = token;
+            user.ResetExpiresAt = tokenExpiringDate;
+            _userRepo.UpdateUser(user);
+            var isUpdated = await _userRepo.SaveChanges();
+            if(!isUpdated)
+            {
+                return new ApiResponseDto<bool>(500, 
+                        "An error occured while trying to request password reset", 
+                            "Error reseting password", false);
+            }
+
+            return new ApiResponseDto<bool>(200, "Password reset link has been sent to users email", null, true);
+
+        }
+
+        public async Task<ApiResponseDto<bool>> ResetPassword(PasswordResetDto passwordResetDto)
+        {
+            var user = await _userRepo.FindUserByResetToken(passwordResetDto.Token);
+            if(user == null)
+            {
+                return new ApiResponseDto<bool>(404, "Invalid password reset token", "Error reseting password", false);
+            }
+
+            int compareDateTime = DateTime.Compare(user.ResetExpiresAt, DateTime.Now);
+
+            if(compareDateTime < 0)
+            {
+                return new ApiResponseDto<bool>(400, "Expired reset token, please request for a new reset token", "Error reseting password", false);
+            }
+
+            byte[] passwordHash, passwordSalt;
+            CreatePasswordHash(passwordResetDto.Password, out passwordHash, out passwordSalt);
+            user.PasswordSalt = passwordSalt;
+            user.PasswordHash = passwordHash;
+            _userRepo.UpdateUser(user);
+            var isUpdated = await _userRepo.SaveChanges();
+
+            if(!isUpdated)
+            {
+                return new ApiResponseDto<bool>(500, "We encountered an error while trying to reset your password, please try again", 
+                "Error reseting password", false);
+            }
+
+            return new ApiResponseDto<bool>(200, "Your password has been updated, login with your new password", 
+                null, true);
         }
 
     }

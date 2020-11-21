@@ -7,5 +7,7 @@ namespace Youpay.API.Services.Impl
     {
         Task<ApiResponseDto<LoginDto>> Login(UserLoginDto userLoginDto);
         Task<ApiResponseDto<UserDto>> Register(UserRegistrationDto userRegistrationDto);
+        Task<ApiResponseDto<bool>> RequestPasswordReset(string email);
+        Task<ApiResponseDto<bool>> ResetPassword(PasswordResetDto passwordResetDto);
     }
 }
