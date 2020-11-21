@@ -55,6 +55,10 @@ namespace Youpay.API.Data
                 .Property(p => p.HasIssue)
                 .HasDefaultValue(false);
 
+            modelBuilder.Entity<User>()
+                .Property(p => p.IsVerified)
+                .HasDefaultValue(false);
+
         }
         public DbSet<User> Users { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
