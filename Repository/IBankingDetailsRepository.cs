@@ -7,7 +7,7 @@ namespace Youpay.API.Repository
 {
     public interface IBankingDetailsRepository
     {
-        Task<BankingDetails> FindByAccountNumber(long accountNumber);
+        Task<BankingDetails> FindByAccountNumber(string accountNumber);
         Task<BankingDetails> FindById(long id);
         void AddBankingDetails(BankingDetails bankingDetails);
         void UpdateBankingDetails(BankingDetails bankingDetails);

@@ -6,8 +6,9 @@ namespace Youpay.API.Dtos
     {
         public long? Id { get; set; }
         public string BankName { get; set; }
-        public long AccountNumber { get; set; }
-        public AccountType AccountType { get; set; }
+        public string AccountName { get; set; }
+        public string AccountNumber { get; set; }
+        public string AccountType { get; set; }
         public bool IsMain { get; set; }
     }
 }

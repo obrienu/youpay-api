@@ -26,10 +26,10 @@ namespace Youpay.API.Repository.Impl
              _context.BankingDetails.Remove(bankingDetails);
         }
 
-        public async Task<BankingDetails> FindByAccountNumber(long accountNumber)
+        public async Task<BankingDetails> FindByAccountNumber(string accountNumber)
         {
             var bankingDetailsToFind = await _context.BankingDetails
-                .FirstOrDefaultAsync(acc => acc.AccountNumber == accountNumber);
+                .FirstOrDefaultAsync(acc => acc.AccountNumber.Equals(accountNumber));
 
             return bankingDetailsToFind;
         }

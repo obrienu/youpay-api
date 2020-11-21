@@ -10,13 +10,14 @@ namespace Youpay.API.Models
         [Key]
         public long? Id { get; set; }
        
-        [Required]
-        [StringLength(100)]
+        [Required, StringLength(100)]
         public string BankName { get; set; }
+
+        [Required, StringLength(200)]
+        public string AccountName { get; set; }
         [Required]
-        public long AccountNumber { get; set; }
-        [Required]
-        [StringLength(20)]
+        public string AccountNumber { get; set; }
+        [Required, StringLength(20)]
         public AccountType AccountType { get; set; }
         public bool IsMain { get; set; }
         [Required]
