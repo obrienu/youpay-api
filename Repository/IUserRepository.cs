@@ -13,7 +13,7 @@ namespace Youpay.API.Repository.Impl
         void UpdateUser(User user);
         void DeleteUser(User user);
         Task<bool> SaveChanges();
-        Task<bool> UserExists(string email);
+        Task<bool> UserExists(string email, string phoneNumber);
 
     }
 }

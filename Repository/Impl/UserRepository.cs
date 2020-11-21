@@ -55,9 +55,9 @@ namespace Youpay.API.Repository.Impl
              _context.Update(user);
         }
 
-        public async Task<bool> UserExists(string email)
+        public async Task<bool> UserExists(string email, string phoneNumber)
         {
-            if(await _context.Users.AnyAsync(user => user.Email.Equals(email)))
+            if(await _context.Users.AnyAsync(user => user.Email.Equals(email) || user.PhoneNumber.Equals(phoneNumber)))
             {
                 return true;
             }
