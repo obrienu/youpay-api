@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using Youpay.API.Dtos;
+using Youpay.API.Helpers;
 using Youpay.API.Models;
 using Youpay.API.Repository;
 using Youpay.API.Repository.Impl;
@@ -21,23 +22,32 @@ namespace Youpay.API.Services.Impl
 
         }
 
-        public async Task<ApiResponseDto<BankingDetails>> GetBankingDetailsById(long id)
+        /*
+        * Method returns an ApiResponseDto with users banking details by the banking details id
+        * It return a 404 error if the id does not match a users banking details id
+        * To optimise security, method searches for banking details that are linked to the provided 
+        * user Id
+        */
+        public async Task<ApiResponseDto<BankingDetailsDto>> GetBankingDetailsById(long userId, long bankingDetailsId)
         {
-            var bankingDetails = await _bankingRepo.FindById(id);
+            var bankingDetails = await GetUserBankingDetailsByUserIdAndBankingDetailsId(userId, bankingDetailsId);
+
             if (bankingDetails == null)
             {
-                return new ApiResponseDto<BankingDetails>(404,
-                 "Banking details unavailable in records", "Error fetching data", null);
+                return new ApiResponseDto<BankingDetailsDto>(404,
+                 "Record unavailable", "Error fetching data", null);
             }
-            return new ApiResponseDto<BankingDetails>(200, "Success", null, bankingDetails);
+            var bankingDetailsToReturn = _mapper.Map<BankingDetailsDto>(bankingDetails);
+
+            return new ApiResponseDto<BankingDetailsDto>(200, "Success", null, bankingDetailsToReturn);
         }
-        public async Task<ApiResponseDto<bool>> DeleteBankingDetails(long id)
+        public async Task<ApiResponseDto<bool>> DeleteBankingDetails(long userId, long bankingDetailsId)
         {
-            var bankingDetails = await _bankingRepo.FindById(id);
+            var bankingDetails = await GetUserBankingDetailsByUserIdAndBankingDetailsId(userId, bankingDetailsId);
             if (bankingDetails == null)
             {
                 return new ApiResponseDto<bool>(404,
-                 "Banking details unavailable in records", "Error deleting data", false);
+                 "Record unavailable", "Error deleting data", false);
             }
             _bankingRepo.DeleteBankingDetails(bankingDetails);
             var isDeleted = await _bankingRepo.SaveChanges();
@@ -47,12 +57,19 @@ namespace Youpay.API.Services.Impl
                  "An Error occured while trying to delete record", "Error deleting record", false);
             }
 
-            return new ApiResponseDto<bool>(200, "Success", null, true);
+            return new ApiResponseDto<bool>(200, "Record deleted", null, true);
         }
 
         public async Task<ApiResponseDto<BankingDetailsDto>> SaveBankingDetails(long userId, BankingDetailsRegistrationDto bankingDetailsRegistrationDto)
         {
-           var bankingDetailsDto =  await SaveAccountRecord(userId, bankingDetailsRegistrationDto);
+            var bankingDetailsInDatabase = await _bankingRepo.FindByAccountNumber(bankingDetailsRegistrationDto.AccountNumber);
+            if(bankingDetailsInDatabase != null)
+            {
+                return new ApiResponseDto<BankingDetailsDto>(403,
+                    "This record already exists", "Error adding record", null);
+            }
+
+            var bankingDetailsDto =  await SaveAccountRecord(userId, bankingDetailsRegistrationDto);
             if(bankingDetailsDto == null)
             {
                 return new ApiResponseDto<BankingDetailsDto>(500,
@@ -88,10 +105,10 @@ namespace Youpay.API.Services.Impl
             return new ApiResponseDto<bool>(200, "Record upated", null, true);
         }
 
-        public async Task<ApiResponseDto<bool>> UpdateBankingDetails(long bankingDetailsId, 
+        public async Task<ApiResponseDto<bool>> UpdateBankingDetails(long userId, long bankingDetailsId, 
                                         BankingDetailsRegistrationDto bankingDetailsRegistrationDto)
         {
-            var bankingDetails = await _bankingRepo.FindById(bankingDetailsId);
+            var bankingDetails = await GetUserBankingDetailsByUserIdAndBankingDetailsId(userId, bankingDetailsId);
             
             if(bankingDetails == null)
             {
@@ -99,9 +116,17 @@ namespace Youpay.API.Services.Impl
                  "Record does not exist", "Record Unavailable", false);
             }
 
-            var bankingDetailsToUpdated = _mapper.Map<BankingDetails>(bankingDetailsRegistrationDto);
-            bankingDetailsToUpdated.Id = bankingDetails.Id;
-            _bankingRepo.UpdateBankingDetails(bankingDetailsToUpdated);
+            if(bankingDetailsRegistrationDto.IsMain)
+                SetAllUserBankingDetailsToNotMain(userId);
+
+            bankingDetails.AccountName = bankingDetailsRegistrationDto.AccountName;
+            bankingDetails.AccountNumber = bankingDetailsRegistrationDto.AccountNumber;
+            bankingDetails.AccountType = bankingDetailsRegistrationDto.AccountType.SetAccountType();
+            bankingDetails.BankName = bankingDetailsRegistrationDto.BankName;
+            bankingDetails.IsMain = bankingDetailsRegistrationDto.IsMain;
+
+
+            _bankingRepo.UpdateBankingDetails(bankingDetails);
 
             var isUpdated = await _bankingRepo.SaveChanges();
 
@@ -116,10 +141,20 @@ namespace Youpay.API.Services.Impl
 
         public async Task<BankingDetailsDto> SaveAccountRecord(long userId, BankingDetailsRegistrationDto bankingDetailsRegistrationDto)
         {
+            var user = await _userRepo.GetUser(userId);
+
+            if(user.BankingDetails.Count >= 3)
+            {
+                return null;
+            }
 
             var bankingDetails = _mapper.Map<BankingDetails>(bankingDetailsRegistrationDto);
+
             if(bankingDetails.IsMain)
                 SetAllUserBankingDetailsToNotMain(userId);
+
+
+            bankingDetails.User = user;
             
             _bankingRepo.AddBankingDetails(bankingDetails);
             var isSaved = await _bankingRepo.SaveChanges();
@@ -129,6 +164,27 @@ namespace Youpay.API.Services.Impl
             }
             var bankingDetailsDto = _mapper.Map<BankingDetailsDto>(bankingDetails);
             return bankingDetailsDto;
+        }
+
+        /*
+        * Method searched a user banking record for the required banking details by its id
+        * It return null if non is found
+        */
+        private async Task<BankingDetails> GetUserBankingDetailsByUserIdAndBankingDetailsId(long userId, long bankingDetailsId)
+        {
+            var user = await _userRepo.GetUser(userId);
+
+            if(user == null)
+               return null;
+
+            BankingDetails bankingDetails = null;
+
+            foreach (var account in user.BankingDetails)
+            {
+                if(account.Id == bankingDetailsId)
+                    bankingDetails = account;
+            }
+            return bankingDetails;
         }
         
         private async void  SetAllUserBankingDetailsToNotMain(long userId)
