@@ -63,5 +63,10 @@ namespace Youpay.API.Repository.Impl
             }
             return false;
         }
+
+        public async Task<User> FindUserByResetToken(string token)
+        {
+            return await _context.Users.FirstOrDefaultAsync(user => user.PasswordResetToken.Equals(token));
+        }
     }
 }
