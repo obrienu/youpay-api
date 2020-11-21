@@ -39,7 +39,7 @@ namespace Youpay.API.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     BankName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     AccountName = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
-                    AccountNumber = table.Column<long>(type: "INTEGER", nullable: false),
+                    AccountNumber = table.Column<string>(type: "TEXT", nullable: false),
                     AccountType = table.Column<int>(type: "INTEGER", maxLength: 20, nullable: false),
                     IsMain = table.Column<bool>(type: "INTEGER", nullable: false),
                     UserId = table.Column<long>(type: "INTEGER", nullable: false),

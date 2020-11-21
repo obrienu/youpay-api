@@ -9,7 +9,7 @@ using Youpay.API.Data;
 namespace Youpay.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20201121120840_AddsUserBankingDetailsTransactionModels")]
+    [Migration("20201121162156_AddsUserBankingDetailsTransactionModels")]
     partial class AddsUserBankingDetailsTransactionModels
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,8 +29,9 @@ namespace Youpay.API.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
-                    b.Property<long>("AccountNumber")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("AccountType")
                         .HasMaxLength(20)
