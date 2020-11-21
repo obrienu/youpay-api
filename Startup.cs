@@ -14,7 +14,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Youpay.API.Data;
 using Youpay.API.Helpers;
+using Youpay.API.Repository;
 using Youpay.API.Repository.Impl;
+using Youpay.API.Services;
 using Youpay.API.Services.Impl;
 using Youpay.API.Utils;
 using Youpay.API.Utils.Impl;
@@ -33,11 +35,19 @@ namespace Youpay.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAutoMapper(typeof(AuthServices).Assembly);
+            
+            services.AddAutoMapper(typeof(AuthServices ).Assembly);
+            services.AddAutoMapper(typeof(BankingDetailsServices ).Assembly);
+            services.AddScoped<IBankingDetailsRepository, BankingDetailsRepository>();
+            services.AddScoped<ICustomAuthorization, CustomAuthorization>();
             services.AddScoped<ITokenUtil, TokenUtil>();
             services.AddScoped<IUserUtil, UserUtil>();
             services.AddScoped<IAuthServices, AuthServices>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IBankingDetailsRepository, BankingDetailsRepository>();
+            services.AddScoped<ITransactionsRepository, TransactionsRepository>();
+            services.AddScoped<IBankingDetailsServices, BankingDetailsServices>();
+            services.AddScoped<IUserServices, UserServices>();
             services.AddDbContext<DataContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
@@ -86,6 +96,7 @@ namespace Youpay.API
             }
 
             //app.UseHttpsRedirection();
+            app.UseAuthentication();
 
             app.UseCors(cors => cors.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
