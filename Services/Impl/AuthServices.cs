@@ -43,7 +43,10 @@ namespace Youpay.API.Services.Impl
                 response = new ApiResponseDto<LoginDto>(401, "Invalid User Credentials", "Authentication error", null);
                 return response;
             }
-                
+
+            if(!userToLogin.IsVerified){
+                 VerifyUser(userToLogin);
+            }
             
             var tokenClaims = new TokenClaimsDto()
             {
@@ -60,7 +63,7 @@ namespace Youpay.API.Services.Impl
                 Email = userToLogin.Email,
                 Role = "User"
             };
-            response = new ApiResponseDto<LoginDto>(201, "Valid User Credentials", "", loginDto);
+            response = new ApiResponseDto<LoginDto>(201, "Valid User Credentials", null, loginDto);
             return response;
         }
 
@@ -79,7 +82,7 @@ namespace Youpay.API.Services.Impl
         
         public async Task<ApiResponseDto<UserDto>> Register(UserRegistrationDto userRegistrationDto)
         {
-            var userExists = await _userRepo.UserExists(userRegistrationDto.Email);
+            var userExists = await _userRepo.UserExists(userRegistrationDto.Email, userRegistrationDto.PhoneNumber);
             if( userExists)
             {
                  return new ApiResponseDto<UserDto>()
@@ -122,6 +125,13 @@ namespace Youpay.API.Services.Impl
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
+        }
+
+        private async void VerifyUser(User user)
+        {
+            user.IsVerified = true;
+            _userRepo.UpdateUser(user);
+           await _userRepo.SaveChanges();
         }
 
     }
