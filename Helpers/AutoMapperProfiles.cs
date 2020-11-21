@@ -8,11 +8,18 @@ namespace Youpay.API.Helpers
     {
         public AutoMapperProfiles()
         {
-            CreateMap<User, UserDto>();
-            CreateMap<BankingDetails, BankingDetailsDto>();
+            CreateMap<User, UserDto>()
+                .ForMember(dest => dest.Sex, opt => 
+                    opt.MapFrom( src => src.Sex.SetGenderFromEnum()));
+
+            CreateMap<BankingDetails, BankingDetailsDto>()
+                .ForMember(dest => dest.AccountType, opt => 
+                        opt.MapFrom(src => src.AccountType.SetAccountTypeFromEnum()));
+
             CreateMap<BankingDetailsRegistrationDto, BankingDetails>()
                 .ForMember(dest => dest.AccountType, opt => 
                     opt.MapFrom( src => src.AccountType.SetAccountType()));
+
             CreateMap<UserRegistrationDto, User>()
                 .ForMember(dest => dest.Sex, opt => opt.MapFrom(src => src.Sex.SetGender()));
         }
