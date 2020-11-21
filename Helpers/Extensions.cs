@@ -24,6 +24,17 @@ namespace Youpay.API.Helpers
 
         }
 
+        public static string SetGenderFromEnum(this Gender gender)
+        {
+            switch (gender)
+            {
+                case Gender.MALE:
+                    return "Male";
+                default:
+                    return "Female";
+            }
+        }
+
         public static AccountType SetAccountType(this string accountType)
         {
             switch (accountType.ToLower())
@@ -34,6 +45,19 @@ namespace Youpay.API.Helpers
                     return AccountType.CURRENT;
                 default:
                     return AccountType.CREDIT;
+            }
+
+        }
+        public static string SetAccountTypeFromEnum(this AccountType accountType)
+        {
+            switch (accountType)
+            {
+                case AccountType.SAVINGS:
+                    return "Savings";
+                case AccountType.CURRENT:
+                    return "Current";
+                default:
+                    return "Credit";
             }
 
         }
