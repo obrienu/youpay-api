@@ -29,6 +29,19 @@ namespace Youpay.API.Controllers
             return StatusCode(response.Status, response);
         }
 
+        [HttpPost("request-password-reset")]
+        public async Task<IActionResult> RequestPasswordReset([FromBody] RequestPasswordResetDto requestPasswordResetDto)
+        {
+            var response =  await _authServices.RequestPasswordReset(requestPasswordResetDto.Email);
+            return StatusCode(response.Status, response);
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] PasswordResetDto passwordResetDto)
+        {
+            var response =  await _authServices.ResetPassword(passwordResetDto);
+             return StatusCode(response.Status, response);
+        }
 
     }
 }
