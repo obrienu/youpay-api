@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Youpay.API.Migrations
 {
-    public partial class AddsUserBankingDetailAndTransactionModel : Migration
+    public partial class AddsUserBankingDetailsTransactionModels : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -22,7 +22,7 @@ namespace Youpay.API.Migrations
                     PasswordSalt = table.Column<byte[]>(type: "BLOB", nullable: false),
                     PasswordResetToken = table.Column<string>(type: "TEXT", maxLength: 6, nullable: true),
                     ResetExpiresAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    IsVerified = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsVerified = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
@@ -38,6 +38,7 @@ namespace Youpay.API.Migrations
                     Id = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     BankName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    AccountName = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
                     AccountNumber = table.Column<long>(type: "INTEGER", nullable: false),
                     AccountType = table.Column<int>(type: "INTEGER", maxLength: 20, nullable: false),
                     IsMain = table.Column<bool>(type: "INTEGER", nullable: false),
