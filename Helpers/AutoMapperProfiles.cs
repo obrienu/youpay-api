@@ -22,6 +22,10 @@ namespace Youpay.API.Helpers
 
             CreateMap<UserRegistrationDto, User>()
                 .ForMember(dest => dest.Sex, opt => opt.MapFrom(src => src.Sex.SetGender()));
+
+            CreateMap<User, UserDtoForTransaction>();
+            CreateMap<Transaction, TransactionResponseDto>();
+            CreateMap<Transaction, TransactionAsListDto>();
         }
     }
 }
