@@ -11,6 +11,7 @@ namespace Youpay.API.Services
          Task<ApiResponseDto<bool>> SetBankingDetailsAsMain(long userId, long bankingDetailsId);
          Task<ApiResponseDto<bool>> UpdateBankingDetails(long userId,long bankingDetailsId, BankingDetailsRegistrationDto bankingDetails);
          Task<ApiResponseDto<BankingDetailsDto>> GetBankingDetailsById(long userId, long id);
+         Task<BankingDetailsDto> SaveAccountRecord(long userId, BankingDetailsRegistrationDto bankingDetailsRegistrationDto);
 
     }
 }
