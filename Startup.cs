@@ -43,6 +43,7 @@ namespace Youpay.API
             services.AddScoped<ITokenUtil, TokenUtil>();
             services.AddScoped<IUserUtil, UserUtil>();
             services.AddScoped<IAuthServices, AuthServices>();
+            services.AddScoped<ITransactionServices, TransactionServices>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IBankingDetailsRepository, BankingDetailsRepository>();
             services.AddScoped<ITransactionsRepository, TransactionsRepository>();
