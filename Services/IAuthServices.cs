@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Youpay.API.Dtos;
 
-namespace Youpay.API.Services.Impl
+namespace Youpay.API.Services
 {
     public interface IAuthServices
     {

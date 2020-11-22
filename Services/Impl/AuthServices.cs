@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Youpay.API.Dtos;
 using Youpay.API.Models;
-using Youpay.API.Repository.Impl;
+using Youpay.API.Repository;
 using Youpay.API.Utils;
 
 namespace Youpay.API.Services.Impl

@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using Youpay.API.Dtos;
-using Youpay.API.Repository.Impl;
+using Youpay.API.Repository;
 
 namespace Youpay.API.Services.Impl
 {

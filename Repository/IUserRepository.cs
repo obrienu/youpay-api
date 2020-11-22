@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Youpay.API.Models;
 
-namespace Youpay.API.Repository.Impl
+namespace Youpay.API.Repository
 {
     public interface IUserRepository
     {
