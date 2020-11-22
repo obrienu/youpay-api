@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Youpay.API.Data;
 using Youpay.API.Helpers;
+using Youpay.API.Dtos;
 using Youpay.API.Models;
 
 namespace Youpay.API.Repository.Impl
@@ -27,25 +28,30 @@ namespace Youpay.API.Repository.Impl
 
         public async Task<Transaction> FindTransactionById(string id)
         {
-            return await _context.Transactions.FirstOrDefaultAsync(trans => trans.Id.Equals(id));
+            return await _context.Transactions
+            .Include(trans => trans.Buyer)
+            .Include(trans => trans.Merchant)
+            .FirstOrDefaultAsync(trans => trans.Id.Equals(id));
         }
 
         public async Task<PagedList<Transaction>> FindUsersTransaction(UserTransactionsParams userTransactionsParams, long userId)
         {
-            IQueryable<Transaction> transactions ;
+            IQueryable<Transaction> transactions = _context.Transactions
+                .Include(trans => trans.Merchant)
+                .Include(trans => trans.Buyer);
 
             switch (userTransactionsParams.Completed)
             {
                 case "true":
                    
-                        transactions = _context.Transactions
+                        transactions
                          .Where(tran => tran.Buyer.Id == userId 
                                     || tran.Merchant.Id == userId && tran.Completed == true)
                         .Include(tran => tran.Buyer) 
                         .Include(tran => tran.Merchant);
                     break;
                 default:
-                        transactions = _context.Transactions
+                        transactions
                         .Where(tran => tran.Buyer.Id == userId 
                                     || tran.Merchant.Id == userId && tran.Completed == false)
                         .Include(tran => tran.Buyer) 
