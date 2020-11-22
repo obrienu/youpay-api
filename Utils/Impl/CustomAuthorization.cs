@@ -21,5 +21,14 @@ namespace Youpay.API.Utils.Impl
             return true;
             
         }
+
+        public bool IsUserAdmin(HttpContext _context)
+        {
+            var userRoleClaim = _context.User.FindFirstValue(ClaimTypes.Role);
+            if(userRoleClaim.Equals("Admin"))
+                return true;
+            
+            return false;
+        }
     }
 }
