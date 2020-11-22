@@ -6,6 +6,8 @@ namespace Youpay.API.Models
 {
     public class Transaction
     {
+        public Transaction(){}
+        
         [Key, Required, StringLength(50), DatabaseGenerated(DatabaseGeneratedOption.None), ]
         public string Id { get; set; }
 
