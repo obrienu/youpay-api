@@ -14,13 +14,18 @@ namespace Youpay.API.Services.Impl
         private readonly ITokenUtil _tokenUtil;
         private readonly IMapper _mapper;
         private readonly IUserUtil _userUtil;
+        private readonly IMailingServices _mailingServices;
 
-        public AuthServices(IUserRepository userRepo, 
+        public AuthServices(
+                            IMailingServices mailingServices,
+                            IUserRepository userRepo, 
                             ITokenUtil tokenUtil,
                             IMapper mapper,
                             IUserUtil userUtil
+                            
                                 )
         {
+            _mailingServices = mailingServices;
             _mapper = mapper;
             _userUtil = userUtil;
             _tokenUtil = tokenUtil;
@@ -108,6 +113,16 @@ namespace Youpay.API.Services.Impl
                  "An Error occured while trying to register user", "Error registering user", null);
             }
 
+            var isPasswordSent = await _mailingServices.SendPassword(user.Firstname, user.Email, password);
+            if(!isPasswordSent)
+            {
+                var userToDelete = await _userRepo.FindUserByEmail(user.Email);
+                _userRepo.DeleteUser(userToDelete);
+                await _userRepo.SaveChanges();
+                return new ApiResponseDto<UserDto>(500,
+                 "An Error occured while trying to register user", "Error registering user", null);
+            }
+
             var userToReturn = _mapper.Map<UserDto>(user);
             return new ApiResponseDto<UserDto>()
             {
@@ -154,6 +169,16 @@ namespace Youpay.API.Services.Impl
                 return new ApiResponseDto<bool>(500, 
                         "An error occured while trying to request password reset", 
                             "Error reseting password", false);
+            }
+
+            var isPasswordSent = await _mailingServices.SendPasswordResetToken(user.Firstname, token, user.Email);
+            if(!isPasswordSent)
+            {
+                var userToDelete = await _userRepo.FindUserByEmail(user.Email);
+                _userRepo.DeleteUser(userToDelete);
+                await _userRepo.SaveChanges();
+                return new ApiResponseDto<bool>(500,
+                 "An Error occured while trying to register user", "Error registering user", false);
             }
 
             return new ApiResponseDto<bool>(200, "Password reset link has been sent to users email", null, true);
