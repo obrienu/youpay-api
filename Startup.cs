@@ -38,17 +38,21 @@ namespace Youpay.API
             
             services.AddAutoMapper(typeof(AuthServices ).Assembly);
             services.AddAutoMapper(typeof(BankingDetailsServices ).Assembly);
-            services.AddScoped<IBankingDetailsRepository, BankingDetailsRepository>();
+            
             services.AddScoped<ICustomAuthorization, CustomAuthorization>();
             services.AddScoped<ITokenUtil, TokenUtil>();
             services.AddScoped<IUserUtil, UserUtil>();
             services.AddScoped<IAuthServices, AuthServices>();
             services.AddScoped<ITransactionServices, TransactionServices>();
+            services.AddScoped<IBankingDetailsServices, BankingDetailsServices>();
+            services.AddScoped<IUserServices, UserServices>();
+            services.AddScoped<IMailingServices, MailGunMailingService>();
+
+            services.AddScoped<IBankingDetailsRepository, BankingDetailsRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IBankingDetailsRepository, BankingDetailsRepository>();
             services.AddScoped<ITransactionsRepository, TransactionsRepository>();
-            services.AddScoped<IBankingDetailsServices, BankingDetailsServices>();
-            services.AddScoped<IUserServices, UserServices>();
+            
             services.AddDbContext<DataContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
