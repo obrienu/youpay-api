@@ -20,10 +20,12 @@ namespace Youpay.API.Services.Impl
         private readonly IUserUtil _userUtil;
         private readonly IMapper _mapper;
 
+        private readonly IMailingServices _mailingServices;
 
-        public TransactionServices( IMapper mapper, IAuthServices authServices, IBankingDetailsServices bankingService, IUserUtil userUtil,
+        public TransactionServices(IMailingServices mailingServices, IMapper mapper, IAuthServices authServices, IBankingDetailsServices bankingService, IUserUtil userUtil,
             IUserRepository userRepo, IBankingDetailsRepository accountRepo, ITransactionsRepository transRepo)
         {
+            _mailingServices = mailingServices;
             _mapper = mapper;
             _userUtil = userUtil;
             _bankingService = bankingService;
@@ -73,6 +75,8 @@ namespace Youpay.API.Services.Impl
                 return new ApiResponseDto<bool>(500, "An error occured while creating transaction, login in to your account and try again",
                 "Error creating transaction", false);
             }
+            await _mailingServices.SendTransactionMail(merchant, buyer);
+            await _mailingServices.SendTransactionMail(buyer, merchant);
 
             return new ApiResponseDto<bool>(200, "Transaction successfully created, check your email for transaction details", null, true);
 
@@ -123,15 +127,105 @@ namespace Youpay.API.Services.Impl
                 "Error creating transaction", false);
             }
 
+            await _mailingServices.SendTransactionMail(user, secondParty);
+            await _mailingServices.SendTransactionMail(secondParty, user);
+
             return new ApiResponseDto<bool>(200, "Transaction successfully created, check your email for transaction details", null, true);
 
         }
 
-        public async Task<ApiResponseDto<bool>> DeleteTransaction(string transsactionId, bool isAdmin)
+        public async Task<ApiResponseDto<bool>> UpdateTransactionPaymentStatus(long userId, string transactionId, bool isAdmin)
+        {
+            var transaction = await _transRepo.FindTransactionById(transactionId);
+            if (transaction == null )
+            {
+                return new ApiResponseDto<bool>(404, "Record not found", "Error updating record", false);
+            }
+
+            if(transaction.Buyer.Id != userId || !isAdmin)
+            {
+                return new ApiResponseDto<bool>(403, "User not authorized to carry out this operation", "Error updating record", false);
+            }
+
+            transaction.HasPaid = true;
+            _transRepo.UpdateTransaction(transaction);
+            var isUpdated = await _transRepo.SaveChanges();
+            if (!isUpdated)
+            {
+                return new ApiResponseDto<bool>(500, "An error occured while updating transaction",
+                "Error updating transaction", false);
+            }
+
+            await _mailingServices.sendNotificationOfPayment(transaction);
+
+            return new ApiResponseDto<bool>(200, "Transaction successfully updated", null, true);
+
+        }
+        public async Task<ApiResponseDto<bool>> UpdateTransactionShipmentStatus(long userId, string transactionId, bool isAdmin)
+        {
+            var transaction = await _transRepo.FindTransactionById(transactionId);
+
+            if (transaction == null )
+            {
+                return new ApiResponseDto<bool>(404, "Record not found", "Error updating record", false);
+            }
+
+            if(transaction.Buyer.Id != userId || !isAdmin)
+            {
+                return new ApiResponseDto<bool>(403, "User not authorized to carry out this operation", "Error updating record", false);
+            }
+
+            transaction.HasShipped = true;
+            _transRepo.UpdateTransaction(transaction);
+            var isUpdated = await _transRepo.SaveChanges();
+
+            if (!isUpdated)
+            {
+                return new ApiResponseDto<bool>(500, "An error occured while updating transaction",
+                "Error updating transaction", false);
+            }
+
+            await _mailingServices.sendNotificationOfPayment(transaction);
+
+            return new ApiResponseDto<bool>(200, "Transaction successfully updated", null, true);
+
+        }
+        public async Task<ApiResponseDto<bool>> UpdateTransactionDeliveryStatus(long userId,
+                                                                                string transactionId,
+                                                                                bool isAdmin)
+        {
+            var transaction = await _transRepo.FindTransactionById(transactionId);
+
+            if (transaction == null )
+            {
+                return new ApiResponseDto<bool>(404, "Record not found", "Error updating record", false);
+            }
+
+            if(transaction.Buyer.Id != userId || !isAdmin)
+            {
+                return new ApiResponseDto<bool>(403, "User not authorized to carry out this operation", "Error updating record", false);
+            }
+
+            transaction.Delivered = true;
+            _transRepo.UpdateTransaction(transaction);
+            var isUpdated = await _transRepo.SaveChanges();
+            if (!isUpdated)
+            {
+                return new ApiResponseDto<bool>(500, "An error occured while updating transaction",
+                "Error updating transaction", false);
+            }
+
+            await _mailingServices.sendNotificationOfDelivery(transaction);
+
+            return new ApiResponseDto<bool>(200, "Transaction successfully updated", null, true);
+
+        }
+
+        public async Task<ApiResponseDto<bool>> DeleteTransaction(string transactionId,
+                                                                  bool isAdmin)
         {
 
-
-            var transaction = await _transRepo.FindTransactionById(transsactionId);
+            var transaction = await _transRepo.FindTransactionById(transactionId);
 
             if (transaction == null)
             {
@@ -171,7 +265,7 @@ namespace Youpay.API.Services.Impl
         public async Task<ApiResponseDto<PaginatedTransactionsResponseDto>> GetTransactions(long userId, UserTransactionsParams userParams)
         {
             var transactions = await _transRepo.FindUsersTransaction(userParams, userId);
-            if(transactions.TotalCount == 0)
+            if (transactions.TotalCount == 0)
             {
                 return new ApiResponseDto<PaginatedTransactionsResponseDto>(404, "No records found for this user", "Error fetching records", null);
             }
@@ -187,7 +281,7 @@ namespace Youpay.API.Services.Impl
                 CurrentPage = transactions.CurrentPage
             };
 
-           return new ApiResponseDto<PaginatedTransactionsResponseDto>(200, "Success", null, paginatedResponse);
+            return new ApiResponseDto<PaginatedTransactionsResponseDto>(200, "Success", null, paginatedResponse);
         }
 
     }
