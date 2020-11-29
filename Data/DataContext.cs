@@ -6,7 +6,6 @@ namespace Youpay.API.Data
 {
     public class DataContext : DbContext
     {
-        public DataContext() { }
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,6 +25,10 @@ namespace Youpay.API.Data
             modelBuilder.Entity<User>()
             .Property(p => p.UpdatedAt)
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            modelBuilder.Entity<Transaction>()
+            .Property(p => p.Id)
+            .HasMaxLength(16);
 
             modelBuilder.Entity<Transaction>()
             .Property(p => p.UpdatedAt)

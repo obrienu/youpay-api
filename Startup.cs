@@ -32,13 +32,25 @@ namespace Youpay.API
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureDevelopmentServices(IServiceCollection services)
+        {
+            services.AddDbContextPool<DataContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+            ConfigureServices(services);
+        }
+
+        public void ConfigureProductionServices(IServiceCollection services)
+        {
+            services.AddDbContextPool<DataContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+            ConfigureServices(services);
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
             
             services.AddAutoMapper(typeof(AuthServices ).Assembly);
             services.AddAutoMapper(typeof(BankingDetailsServices ).Assembly);
-            
             services.AddScoped<ICustomAuthorization, CustomAuthorization>();
             services.AddScoped<ITokenUtil, TokenUtil>();
             services.AddScoped<IUserUtil, UserUtil>();
@@ -47,14 +59,12 @@ namespace Youpay.API
             services.AddScoped<IBankingDetailsServices, BankingDetailsServices>();
             services.AddScoped<IUserServices, UserServices>();
             services.AddScoped<IMailingServices, MailGunMailingService>();
-
             services.AddScoped<IBankingDetailsRepository, BankingDetailsRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IBankingDetailsRepository, BankingDetailsRepository>();
             services.AddScoped<ITransactionsRepository, TransactionsRepository>();
             
-            services.AddDbContext<DataContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            
             services.AddControllers();
             services.AddCors();
             services.AddSwaggerGen(c =>

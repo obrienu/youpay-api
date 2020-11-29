@@ -26,7 +26,7 @@ namespace Youpay.API.Repository.Impl
              _context.Transactions.Remove(transaction);
         }
 
-        public async Task<Transaction> FindTransactionById(string id)
+        public async Task<Transaction> FindTransactionById(long id)
         {
             return await _context.Transactions
             .Include(trans => trans.Buyer)
@@ -79,7 +79,7 @@ namespace Youpay.API.Repository.Impl
            return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> TransactionExists(string id)
+        public async Task<bool> TransactionExists(long id)
         {
             return await _context.Transactions.AnyAsync(trans => trans.Id.Equals(id));
         }
@@ -87,6 +87,15 @@ namespace Youpay.API.Repository.Impl
         public  void UpdateTransaction(Transaction transaction)
         {
              _context.Transactions.Update(transaction);
+        }
+
+        public async Task<string> GetLastGeneratedCode(){
+           var transaction = await _context.Transactions.OrderByDescending(trans => trans.CreatedAt).FirstOrDefaultAsync();
+           if(transaction == null)
+            {
+                return "";
+            }
+           return transaction.Code;
         }
     }
 }

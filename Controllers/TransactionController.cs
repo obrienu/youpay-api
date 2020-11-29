@@ -27,7 +27,7 @@ namespace Youpay.API.Controllers
             }
 
             [HttpGet("{transactionId}")]
-            public async Task<ActionResult> GetTransaction(long userId, string transactionId)
+            public async Task<ActionResult> GetTransaction(long userId, long transactionId)
             {
                 if(!_customAuth.IsUserAllowedAccess(userId, HttpContext))
                     return StatusCode(401);
@@ -59,7 +59,7 @@ namespace Youpay.API.Controllers
             }
 
             [HttpDelete("{transactionId}")]
-            public async Task<ActionResult> DeleteTransaction(long userId, string transactionId)
+            public async Task<ActionResult> DeleteTransaction(long userId, long transactionId)
             {
                 if(!_customAuth.IsUserAllowedAccess(userId, HttpContext))
                     return StatusCode(401);

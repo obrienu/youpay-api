@@ -15,7 +15,7 @@ namespace Youpay.API.Models
         }
         
         [Key]
-        public long? Id { get; set; }
+        public long Id { get; set; }
         [Required]
         [StringLength(50)]
         public string Firstname { get; set; }

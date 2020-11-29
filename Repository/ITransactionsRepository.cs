@@ -10,13 +10,14 @@ namespace Youpay.API.Repository
     {
         Task<PagedList<Transaction>>  FindUsersTransaction(UserTransactionsParams userTransactionsParams, 
          long userId);
-        Task<Transaction> FindTransactionById(string id);
+        Task<Transaction> FindTransactionById(long id);
         void AddTransaction(Transaction transaction);
         void UpdateTransaction(Transaction transaction);
         void DeleteTransaction(Transaction transaction);
         Task<bool> SaveChanges();
 
-        Task<bool> TransactionExists(string id);
+        Task<bool> TransactionExists(long id);
 
+        Task<string> GetLastGeneratedCode();
     }
 }

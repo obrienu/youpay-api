@@ -58,17 +58,6 @@ namespace Youpay.API.Utils.Impl
             return randomiseString.ToString();
         }
 
-        public string GenerateTransactionCode(String previousCode)
-        {
-            if (previousCode == null)
-            {
-                return "YOU0000001";
-            }
-
-            var stringDigit = previousCode.Substring(3);
-            var nextDigit = (Int64.Parse(stringDigit) + 1).ToString().PadLeft(7, '0');
-            return "YOU" + nextDigit;
-        }
     }
 
 

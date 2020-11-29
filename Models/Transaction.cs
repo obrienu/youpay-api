@@ -8,8 +8,11 @@ namespace Youpay.API.Models
     {
         public Transaction(){}
         
-        [Key, Required, StringLength(50), DatabaseGenerated(DatabaseGeneratedOption.None), ]
-        public string Id { get; set; }
+        [Key]
+        public long Id { get; set; }
+
+        [Required]
+        public string Code { get; set; }
 
         [Required, StringLength(100)]
         public string ProductName { get; set; }

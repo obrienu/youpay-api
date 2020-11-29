@@ -68,8 +68,8 @@ namespace Youpay.API.Services.Impl
                 return new ApiResponseDto<BankingDetailsDto>(403,
                     "This record already exists", "Error adding record", null);
             }
-
             var bankingDetailsDto =  await SaveAccountRecord(userId, bankingDetailsRegistrationDto);
+            System.Console.WriteLine("Second");
             if(bankingDetailsDto == null)
             {
                 return new ApiResponseDto<BankingDetailsDto>(500,
@@ -117,7 +117,11 @@ namespace Youpay.API.Services.Impl
             }
 
             if(bankingDetailsRegistrationDto.IsMain)
-                SetAllUserBankingDetailsToNotMain(userId);
+            {
+                var user = await _userRepo.GetUser(userId);
+                SetAllUserBankingDetailsToNotMain(user);
+            }
+                
 
             bankingDetails.AccountName = bankingDetailsRegistrationDto.AccountName;
             bankingDetails.AccountNumber = bankingDetailsRegistrationDto.AccountNumber;
@@ -142,6 +146,8 @@ namespace Youpay.API.Services.Impl
         public async Task<BankingDetailsDto> SaveAccountRecord(long userId, BankingDetailsRegistrationDto bankingDetailsRegistrationDto)
         {
             var user = await _userRepo.GetUser(userId);
+            
+
 
             if(user.BankingDetails.Count >= 3)
             {
@@ -151,12 +157,12 @@ namespace Youpay.API.Services.Impl
             var bankingDetails = _mapper.Map<BankingDetails>(bankingDetailsRegistrationDto);
 
             if(bankingDetails.IsMain)
-                SetAllUserBankingDetailsToNotMain(userId);
-
+                SetAllUserBankingDetailsToNotMain(user);
 
             bankingDetails.User = user;
             
             _bankingRepo.AddBankingDetails(bankingDetails);
+            
             var isSaved = await _bankingRepo.SaveChanges();
             if(!isSaved)
             {
@@ -187,16 +193,19 @@ namespace Youpay.API.Services.Impl
             return bankingDetails;
         }
         
-        private async void  SetAllUserBankingDetailsToNotMain(long userId)
+        private async void  SetAllUserBankingDetailsToNotMain(User user)
         { 
-            var user = await _userRepo.GetUser(userId);
+            
             var count = user.BankingDetails.Count;
             var bankingDetails = user.BankingDetails;
             for (int i = 0; i < count; i++)
             {
                 bankingDetails[i].IsMain = false;
-                 _bankingRepo.UpdateBankingDetails(bankingDetails[i]);
+                _bankingRepo.UpdateBankingDetails(bankingDetails[i]);
+                await _bankingRepo.SaveChanges();
+                
             }
+            
         }
     }
 }

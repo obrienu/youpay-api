@@ -6,6 +6,6 @@ namespace Youpay.API.Utils
     {
         string GenerateRandomPassword(int length);
         string GenerateRandomId(int length);
-        string GenerateTransactionCode(String previousCode);
+        
     }
 }

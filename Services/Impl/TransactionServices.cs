@@ -1,12 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Youpay.API.Dtos;
 using Youpay.API.Models;
 using Youpay.API.Repository;
 using Youpay.API.Utils;
-using Youpay.API.Utils.Impl;
 
 namespace Youpay.API.Services.Impl
 {
@@ -43,6 +42,7 @@ namespace Youpay.API.Services.Impl
 
             await _authServices.Register(merchantToRegister);
             await _authServices.Register(buyerToRegiser);
+            
 
             var merchant = await _userRepo.FindUserByEmail(merchantToRegister.Email);
             var buyer = await _userRepo.FindUserByEmail(buyerToRegiser.Email);
@@ -53,12 +53,13 @@ namespace Youpay.API.Services.Impl
                  "Error creating transaction", false);
             }
 
+
             await _bankingService.SaveBankingDetails((long)merchant.Id, merchantBankingDetails);
             await _bankingService.SaveBankingDetails((long)buyer.Id, buyerBankingDetails);
 
             var transaction = new Transaction()
             {
-                Id = _userUtil.GenerateRandomId(16),
+                Code = await GenerateTransactionCode(),
                 ProductName = registerationDto.ProductName,
                 Category = registerationDto.Category,
                 Charges = registerationDto.Charges,
@@ -100,7 +101,7 @@ namespace Youpay.API.Services.Impl
 
             var transaction = new Transaction()
             {
-                Id = _userUtil.GenerateRandomId(16),
+                Code = await GenerateTransactionCode(),
                 ProductName = userTransactionDto.ProductName,
                 Category = userTransactionDto.Category,
                 Charges = userTransactionDto.Charges,
@@ -134,7 +135,7 @@ namespace Youpay.API.Services.Impl
 
         }
 
-        public async Task<ApiResponseDto<bool>> UpdateTransactionPaymentStatus(long userId, string transactionId, bool isAdmin)
+        public async Task<ApiResponseDto<bool>> UpdateTransactionPaymentStatus(long userId, long transactionId, bool isAdmin)
         {
             var transaction = await _transRepo.FindTransactionById(transactionId);
             if (transaction == null )
@@ -161,7 +162,7 @@ namespace Youpay.API.Services.Impl
             return new ApiResponseDto<bool>(200, "Transaction successfully updated", null, true);
 
         }
-        public async Task<ApiResponseDto<bool>> UpdateTransactionShipmentStatus(long userId, string transactionId, bool isAdmin)
+        public async Task<ApiResponseDto<bool>> UpdateTransactionShipmentStatus(long userId, long transactionId, bool isAdmin)
         {
             var transaction = await _transRepo.FindTransactionById(transactionId);
 
@@ -191,7 +192,7 @@ namespace Youpay.API.Services.Impl
 
         }
         public async Task<ApiResponseDto<bool>> UpdateTransactionDeliveryStatus(long userId,
-                                                                                string transactionId,
+                                                                                long transactionId,
                                                                                 bool isAdmin)
         {
             var transaction = await _transRepo.FindTransactionById(transactionId);
@@ -221,7 +222,7 @@ namespace Youpay.API.Services.Impl
 
         }
 
-        public async Task<ApiResponseDto<bool>> DeleteTransaction(string transactionId,
+        public async Task<ApiResponseDto<bool>> DeleteTransaction(long transactionId,
                                                                   bool isAdmin)
         {
 
@@ -247,7 +248,7 @@ namespace Youpay.API.Services.Impl
             return new ApiResponseDto<bool>(200, "Record deleted successfully", null, true);
         }
 
-        public async Task<ApiResponseDto<TransactionResponseDto>> GetTransaction(string transactionId)
+        public async Task<ApiResponseDto<TransactionResponseDto>> GetTransaction(long transactionId)
         {
             var transaction = await _transRepo.FindTransactionById(transactionId);
 
@@ -282,6 +283,19 @@ namespace Youpay.API.Services.Impl
             };
 
             return new ApiResponseDto<PaginatedTransactionsResponseDto>(200, "Success", null, paginatedResponse);
+        }
+
+        public async Task<string> GenerateTransactionCode()
+        {
+            var lastGeneratedCode = await _transRepo.GetLastGeneratedCode();
+            if (string.IsNullOrWhiteSpace(lastGeneratedCode))
+            {
+                return "YOU0000001";
+            }
+
+            var stringDigit = lastGeneratedCode.Substring(3);
+            var nextDigit = (Int64.Parse(stringDigit) + 1).ToString().PadLeft(7, '0');
+            return "YOU" + nextDigit;
         }
 
     }
